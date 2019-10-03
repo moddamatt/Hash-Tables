@@ -51,7 +51,27 @@ class HashTable:
 
         Fill this in.
         '''
-        pass
+        index = self._hash_mod(key)
+
+        if self.storage[index] is not None:
+            # Set a variable to the current index
+            pair = self.storage[index]
+            
+            # After some research and just brute forcing it, I present my best guess to collision detecion
+            # While the next availbe index is occupied and doesn't share a hash key with current index
+            while pair.next is not None and pair.key != key:
+                # Set index to next index
+                pair = pair.next
+            if pair.key == key:
+                # If current key is equal to new key set the passed in value as such
+                pair.value = value
+                return
+            else:
+                # Make a linked pair out of the next index
+                pair.next = LinkedPair(key, value)
+                return
+        else:
+            self.storage[index] = LinkedPair(key, value)
 
 
 
@@ -63,8 +83,13 @@ class HashTable:
 
         Fill this in.
         '''
-        pass
+        index = self._hash_mod(key)
 
+        if self.storage[index] is None:
+            print("Warning: Key not found")
+            return
+
+        return self.storage[index] is None
 
     def retrieve(self, key):
         '''
@@ -74,8 +99,19 @@ class HashTable:
 
         Fill this in.
         '''
-        pass
-
+        index = self._hash_mod(key)
+        if self.storage[index] is None:
+            return None
+        else:
+            pair = self.storage[index]
+            if pair.key == key:
+                return pair.value
+            while pair is not None:
+                if pair.key == key:
+                    return pair.value
+                else:
+                    pair = pair.next
+            return None
 
     def resize(self):
         '''
@@ -84,7 +120,18 @@ class HashTable:
 
         Fill this in.
         '''
-        pass
+        self.capacity *= 2
+
+        new_storage = [None] * self.capacity
+        
+        # for i in [item for item in self.storage if item != None]:
+
+        for pair in self.storage:
+            if pair is not None:
+                new_index = self._hash_mod(pair.key)
+                new_storage[new_index] = pair
+
+        self.storage = new_storage
 
 
 
